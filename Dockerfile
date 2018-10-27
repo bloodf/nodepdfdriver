@@ -14,9 +14,6 @@ ENV TERM=xterm \
     LC_ALL=C.UTF-8 \
     TIMEZONE=America/Sao_Paulo
 
-########################################################################
-# Build tools
-########################################################################
 RUN set -x \
     && apk update \
     && apk add \
@@ -33,14 +30,16 @@ RUN set -x \
 
 RUN set -x \
     && touch /root/.profile \
-    # Install node packages
     && npm install --silent -g \
         gulp-cli \
         grunt-cli \
         bower \
         markdown-styles \
         npx \
-    # Configure root account
+        puppeteer \
+        node-pdftk \
+        dotenv \
+        nodemon \
     && echo "export NLS_LANG=$(echo $NLS_LANG)"                >> /root/.profile \
     && echo "export LANG=$(echo $LANG)"                        >> /root/.profile \
     && echo "export LANGUAGE=$(echo $LANGUAGE)"                >> /root/.profile \
@@ -57,9 +56,6 @@ RUN set -x \
     && chmod 0777 /home/dev \
     && chmod -R u+rwX,g+rwX,o+rwX /home/dev \
     && setfacl -R -d -m user::rwx,group::rwx,other::rwx /home/dev \
-    # Setup wrapper scripts
-    && curl -o /run-as-user https://raw.githubusercontent.com/mkenney/docker-scripts/master/container/run-as-user \
-    && chmod 0755 /run-as-user
 
 RUN set -x \
     && apk del \
@@ -96,8 +92,6 @@ RUN echo @edge http://nl.alpinelinux.org/alpine/edge/community >> /etc/apk/repos
       nss@edge
 
 COPY fonts/*.* /usr/share/fonts/truetype/
-
-RUN npm install -g puppeteer node-pdftk dotenv nodemon
 
 RUN mkfontscale && mkfontdir && fc-cache
 
