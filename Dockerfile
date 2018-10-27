@@ -2,6 +2,11 @@ FROM node:10-alpine
 
 RUN apk add python py-pip
 RUN pip install --upgrade awscli==1.14.5 s3cmd==2.0.1 python-magic
+RUN pip install --upgrade pip
+
+RUN apk --no-cache add msttcorefonts-installer fontconfig && \
+    update-ms-fonts && \
+    fc-cache -f
 
 RUN echo "@edge http://nl.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories && \
     echo "@community http://nl.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories && \
