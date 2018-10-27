@@ -55,7 +55,7 @@ RUN set -x \
     && chown -R dev:dev /home/dev/ \
     && chmod 0777 /home/dev \
     && chmod -R u+rwX,g+rwX,o+rwX /home/dev \
-    && setfacl -R -d -m user::rwx,group::rwx,other::rwx /home/dev \
+    && setfacl -R -d -m user::rwx,group::rwx,other::rwx /home/dev
 
 RUN set -x \
     && apk del \
