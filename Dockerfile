@@ -42,6 +42,7 @@ RUN set -x \
         node-pdftk \
         dotenv \
         nodemon \
+        forever \
     && echo "export NLS_LANG=$(echo $NLS_LANG)"                >> /root/.profile \
     && echo "export LANG=$(echo $LANG)"                        >> /root/.profile \
     && echo "export LANGUAGE=$(echo $LANGUAGE)"                >> /root/.profile \
