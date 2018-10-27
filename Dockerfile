@@ -33,15 +33,10 @@ RUN set -x \
 RUN set -x \
     && touch /root/.profile \
     && npm install --silent -g \
-        gulp-cli \
-        grunt-cli \
-        bower \
-        markdown-styles \
         npx \
         puppeteer \
         node-pdftk \
         dotenv \
-        nodemon \
         forever \
     && echo "export NLS_LANG=$(echo $NLS_LANG)"                >> /root/.profile \
     && echo "export LANG=$(echo $LANG)"                        >> /root/.profile \
