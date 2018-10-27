@@ -29,6 +29,6 @@ RUN echo @edge http://nl.alpinelinux.org/alpine/edge/community >> /etc/apk/repos
       chromium@edge \
       nss@edge
 
-WORKDIR /usr/src/app
+WORKDIR /src
 
-CMD ["/usr/local/bin/npm"]
+CMD ["node"]
