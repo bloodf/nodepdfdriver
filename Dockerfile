@@ -14,6 +14,8 @@ ENV TERM=xterm \
     LC_ALL=C.UTF-8 \
     TIMEZONE=America/Sao_Paulo
 
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+
 RUN set -x \
     && apk update \
     && apk add \
@@ -72,6 +74,8 @@ RUN set -x \
         ${NODE_PREFIX}/lib/node_modules/npm/doc \
         ${NODE_PREFIX}/lib/node_modules/npm/html
 
+RUN apk add --update bash && rm -rf /var/cache/apk/*
+
 RUN apk add python py-pip
 RUN pip install --upgrade pip
 RUN pip install --upgrade awscli==1.14.5 s3cmd==2.0.1 python-magic
@@ -85,14 +89,19 @@ RUN echo "@edge http://nl.alpinelinux.org/alpine/edge/main" >> /etc/apk/reposito
     apk add --no-cache pdftk@community libgcj@edge
 
 ENV CHROME_BIN=/usr/bin/chromium-browser
+
 RUN echo @edge http://nl.alpinelinux.org/alpine/edge/community >> /etc/apk/repositories && \
     echo @edge http://nl.alpinelinux.org/alpine/edge/main >> /etc/apk/repositories && \
     apk add --no-cache \
       chromium@edge \
       nss@edge
 
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+
 COPY fonts/*.* /usr/share/fonts/truetype/
 
 RUN mkfontscale && mkfontdir && fc-cache
+
+RUN npm cache clear --force
 
 WORKDIR /usr/src/app
