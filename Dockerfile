@@ -3,8 +3,8 @@ FROM node:10-alpine
 LABEL org.label-schema.schema-version = 1.0.0 \
     org.label-schema.vendor = heitor.ramon@gmail.com \
     org.label-schema.vcs-url = https://github.com/bloodf/nodepdfdriver \
-    org.label-schema.description = "Node PDF TK & Puppeteer" \
-    org.label-schema.name = "NODEPDF" \
+    org.label-schema.description = "Node 10 PDF TK & Puppeteer Docker" \
+    org.label-schema.name = "NODEPDFDRIVER" \
     org.label-schema.url = https://github.com/bloodf/nodepdfdriver
 
 ENV TERM=xterm \
@@ -97,8 +97,8 @@ RUN echo @edge http://nl.alpinelinux.org/alpine/edge/community >> /etc/apk/repos
 
 COPY fonts/*.* /usr/share/fonts/truetype/
 
+RUN npm install -g puppeteer node-pdftk dotenv nodemon
+
 RUN mkfontscale && mkfontdir && fc-cache
 
 WORKDIR /usr/src/app
-
-CMD ["node"]
