@@ -94,8 +94,6 @@ RUN echo @edge http://nl.alpinelinux.org/alpine/edge/community >> /etc/apk/repos
 
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
-COPY fonts/*.* /usr/share/fonts/truetype/
-
 RUN mkfontscale && mkfontdir && fc-cache
 
 RUN npm cache clear --force
