@@ -14,6 +14,8 @@ ENV TERM=xterm \
     LC_ALL=C.UTF-8 \
     TIMEZONE=America/Sao_Paulo
     
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+    
 RUN set -x \
     && apk update \
     && apk add \
