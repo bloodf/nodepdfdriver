@@ -1,4 +1,4 @@
-FROM node:10-alpine
+FROM node:10.13.0-slim
 
 LABEL org.label-schema.schema-version = 1.0.0 \
     org.label-schema.vendor = heitor.ramon@gmail.com \
@@ -7,95 +7,40 @@ LABEL org.label-schema.schema-version = 1.0.0 \
     org.label-schema.name = "NODEPDFDRIVER" \
     org.label-schema.url = https://github.com/bloodf/nodepdfdriver
 
-ENV TERM=xterm \
-    NLS_LANG=American_America.AL32UTF8 \
-    LANG=C.UTF-8 \
-    LANGUAGE=C.UTF-8 \
-    LC_ALL=C.UTF-8 \
-    TIMEZONE=America/Sao_Paulo
-    
-ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
-    
-RUN set -x \
-    && apk update \
-    && apk add \
-        acl \
-        ca-certificates \
-        curl \
-        git \
-        gnupg \
-        mercurial \
-        rsync \
-        shadow \
-        subversion \
-        sudo
+#PDFTK
 
-RUN set -x \
-    && touch /root/.profile \
-    && npm install --silent -g \
+RUN apt-get update && apt-get install -y pdftk ghostscript imagemagick
+# tools
+RUN apt-get install -yyq gconf-service lsb-release wget xdg-utils
+# and fonts
+RUN apt-get install -yyq fonts-liberation
+
+#Chrome
+RUN apt-get update && \
+apt-get install -yq gconf-service libasound2 libatk1.0-0 libc6 libcairo2 libcups2 libdbus-1-3 \
+libexpat1 libfontconfig1 libgcc1 libgconf-2-4 libgdk-pixbuf2.0-0 libglib2.0-0 libgtk-3-0 libnspr4 \
+libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 \
+libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 \
+fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-kacst ttf-freefont \
+ca-certificates fonts-liberation libappindicator1 libnss3 lsb-release xdg-utils wget && \
+wget https://github.com/Yelp/dumb-init/releases/download/v1.2.1/dumb-init_1.2.1_amd64.deb && \
+dpkg -i dumb-init_*.deb && rm -f dumb-init_*.deb && \
+apt-get clean && apt-get autoremove -y && rm -rf /var/lib/apt/lists/*
+
+# Set language to UTF8
+
+#ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+
+#ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-unstable
+
+#Node Globals
+
+RUN npm install -g \
         npx \
-        puppeteer \
         node-pdftk \
         dotenv \
         forever \
-    && echo "export NLS_LANG=$(echo $NLS_LANG)"                >> /root/.profile \
-    && echo "export LANG=$(echo $LANG)"                        >> /root/.profile \
-    && echo "export LANGUAGE=$(echo $LANGUAGE)"                >> /root/.profile \
-    && echo "export LC_ALL=$(echo $LC_ALL)"                    >> /root/.profile \
-    && echo "export TERM=xterm"                                >> /root/.profile \
-    && echo "export PATH=$(echo $PATH)"                        >> /root/.profile \
-    && echo "cd /src"                                          >> /root/.profile \
-    && addgroup dev \
-    && adduser -D -s /bin/sh -G dev dev \
-    && echo "dev:password" | chpasswd \
-    && curl --compressed -o- -L https://yarnpkg.com/install.sh | sh \
-    && rsync -a /root/ /home/dev/ \
-    && chown -R dev:dev /home/dev/ \
-    && chmod 0777 /home/dev \
-    && chmod -R u+rwX,g+rwX,o+rwX /home/dev \
-    && setfacl -R -d -m user::rwx,group::rwx,other::rwx /home/dev
-
-RUN set -x \
-    && apk del \
-        curl \
-        gnupg \
-        linux-headers \
-        paxctl \
-        python \
-        rsync \
-        tar \
-    && rm -rf \
-        /var/cache/apk/* \
-        ${NODE_PREFIX}/lib/node_modules/npm/man \
-        ${NODE_PREFIX}/lib/node_modules/npm/doc \
-        ${NODE_PREFIX}/lib/node_modules/npm/html
-
-RUN apk add --update bash && rm -rf /var/cache/apk/*
-
-RUN apk add python py-pip
-RUN pip install --upgrade pip
-RUN pip install --upgrade awscli==1.14.5 s3cmd==2.0.1 python-magic
-
-RUN apk --no-cache add msttcorefonts-installer fontconfig && \
-    update-ms-fonts && \
-    fc-cache -f
-
-RUN echo "@edge http://nl.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories && \
-    echo "@community http://nl.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories && \
-    apk add --no-cache pdftk@community libgcj@edge
-
-ENV CHROME_BIN=/usr/bin/chromium-browser
-
-RUN echo @edge http://nl.alpinelinux.org/alpine/edge/community >> /etc/apk/repositories && \
-    echo @edge http://nl.alpinelinux.org/alpine/edge/main >> /etc/apk/repositories && \
-    apk add --no-cache \
-      chromium@edge \
-      nss@edge
-
-ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
-
-RUN mkfontscale && mkfontdir && fc-cache
-
-RUN npm cache clear --force
+        puppeteer \
+        --unsafe-perm
 
 WORKDIR /usr/src/app
